@@ -201,3 +201,457 @@ pnpm install -D eslint-plugin-prettier prettier eslint-config-prettier
 ```
 
 按照上述的步骤配置完成之后，进行格式化代码之后，就会按照上面添加的规则进行格式化
+
+# 5月16日
+
+### 一、配置styleLint
+
+官方文档[Home | Stylelint中文文档 | Stylelint中文网 (bootcss.com)](https://stylelint.bootcss.com/)
+
+> [!NOTE]
+>
+> 配置styleLint的目的是规避 CSS 代码中的错误并保持一致的编码风格
+
+第一步：
+
+安装如下的依赖：
+
+```
+pnpm add sass sass-loader stylelint postcss postcss-scss postcss-html stylelint-config-prettier stylelint-config-recess-order stylelint-config-recommended-scss stylelint-config-standard stylelint-config-standard-vue stylelint-scss stylelint-order stylelint-config-standard-scss -D
+```
+
+第二步：
+
+在项目目录下，新建一个`.stylelintrc.cjs`的配置文件，文件内容如下：
+
+```
+// @see https://stylelint.bootcss.com/
+
+module.exports = {
+  extends: [
+    'stylelint-config-standard', // 配置stylelint拓展插件
+    'stylelint-config-html/vue', // 配置 vue 中 template 样式格式化
+    'stylelint-config-standard-scss', // 配置stylelint scss插件
+    'stylelint-config-recommended-vue/scss', // 配置 vue 中 scss 样式格式化
+    'stylelint-config-recess-order', // 配置stylelint css属性书写顺序插件,
+    'stylelint-config-prettier', // 配置stylelint和prettier兼容
+  ],
+  overrides: [
+    {
+      files: ['**/*.(scss|css|vue|html)'],
+      customSyntax: 'postcss-scss',
+    },
+    {
+      files: ['**/*.(html|vue)'],
+      customSyntax: 'postcss-html',
+    },
+  ],
+  ignoreFiles: [
+    '**/*.js',
+    '**/*.jsx',
+    '**/*.tsx',
+    '**/*.ts',
+    '**/*.json',
+    '**/*.md',
+    '**/*.yaml',
+  ],
+  /**
+   * null  => 关闭该规则
+   * always => 必须
+   */
+  rules: {
+    'value-keyword-case': null, // 在 css 中使用 v-bind，不报错
+    'no-descending-specificity': null, // 禁止在具有较高优先级的选择器后出现被其覆盖的较低优先级的选择器
+    'function-url-quotes': 'always', // 要求或禁止 URL 的引号 "always(必须加上引号)"|"never(没有引号)"
+    'no-empty-source': null, // 关闭禁止空源码
+    'selector-class-pattern': null, // 关闭强制选择器类名的格式
+    'property-no-unknown': null, // 禁止未知的属性(true 为不允许)
+    'block-opening-brace-space-before': 'always', //大括号之前必须有一个空格或不能有空白符
+    'value-no-vendor-prefix': null, // 关闭 属性值前缀 --webkit-box
+    'property-no-vendor-prefix': null, // 关闭 属性前缀 -webkit-mask
+    'selector-pseudo-class-no-unknown': [
+      // 不允许未知的选择器
+      true,
+      {
+        ignorePseudoClasses: ['global', 'v-deep', 'deep'], // 忽略属性，修改element默认样式的时候能使用到
+      },
+    ],
+  },
+}
+```
+
+第三步：
+
+在项目目录下，新建一个`.stylelintignore`的忽略文件，文件内容如下：
+
+```
+/node_modules/*
+/dist/*
+/html/*
+/public/*
+```
+
+第四步：
+
+在`package.json`文件的scripts配置项中添加如下代码：
+
+```
+"scripts": {
+    "format": "prettier --write \"./**/*.{html,vue,ts,js,json,md}\"",
+    "lint:eslint": "eslint src/**/*.{ts,vue} --cache --fix",
+    "lint:style": "stylelint src/**/*.{css,scss,vue} --cache --fix"
+  },
+```
+
+### 二、配置husky
+
+> [!NOTE]
+>
+> 配置husky的目的是利用其在代码提交之前触发git hook(git在客户端的钩子)，然后执行`pnpm run format`来自动的格式化我们的代码
+
+第一步：
+
+```
+pnpm install -D husky
+```
+
+安装husky
+
+第二步：
+
+```
+npx husky-init
+```
+
+执行完这段代码，会生成一个`.husky`的文件夹，该文件夹下有一个`pre-commit`文件，这个文件在执行commit的时候会自动执行
+
+第三步：
+
+在`pre-commit`文件修改为如下：
+
+```
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+pnpm run format
+
+```
+
+完成如上步骤，代码在进行commit操作时，会执行`pnpm run format`对代码进行格式化，然后再提交
+
+### 三、配置commitLint
+
+> [!NOTE]
+>
+> 配置commitLint的目的是在于统一commit的信息
+
+第一步：
+
+安装相关依赖
+
+```
+pnpm add @commitlint/config-conventional @commitlint/cli -D
+```
+
+第二步：
+
+在项目目录下，新建`commitlint.config.cjs`文件，文件内容如下：
+
+```
+module.exports = {
+  extends: ['@commitlint/config-conventional'],
+  // 校验规则
+  rules: {
+    'type-enum': [
+      2,
+      'always',
+      [
+        'feat',
+        'fix',
+        'docs',
+        'style',
+        'refactor',
+        'perf',
+        'test',
+        'chore',
+        'revert',
+        'build',
+      ],
+    ],
+    'type-case': [0],
+    'type-empty': [0],
+    'scope-empty': [0],
+    'scope-case': [0],
+    'subject-full-stop': [0, 'never'],
+    'subject-case': [0, 'never'],
+    'header-max-length': [0, 'always', 72],
+  },
+}
+```
+
+第三步：
+
+在`package.json`文件的scripts配置项中添加如下代码：
+
+```
+"scripts": {
+  "commitlint": "commitlint --config commitlint.config.cjs -e -V"
+},
+```
+
+第四步：
+
+配置husky
+
+```
+npx husky add .husky/commit-msg
+```
+
+执行完这一步，会在`.husky`文件夹下面生成一个新的文件，名叫`commit-msg`
+
+第五步：
+
+在新的文件内容修改为如下：
+
+```
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+pnpm commitlint
+
+```
+
+完成上述步骤之后，在进行commit时，需要携带如下关键字
+
+```
+'feat',//新特性、新功能
+'fix',//修改bug
+'docs',//文档修改
+'style',//代码格式修改, 注意不是 css 修改
+'refactor',//代码重构
+'perf',//优化相关，比如提升性能、体验
+'test',//测试用例修改
+'chore',//其他修改, 比如改变构建流程、或者增加依赖库、工具等
+'revert',//回滚到上一个版本
+'build',//编译相关的修改，例如发布版本、对项目构建或者依赖的改动
+```
+
+### 四、配置统一包管理工具
+
+第一步：
+
+在项目目录下，新建文件夹`scripts`，文件夹下新建文件`preinstall.js`文件，文件内容如下：
+
+```
+if (!/pnpm/.test(process.env.npm_execpath || '')) {
+  console.warn(
+    `\u001b[33mThis repository must using pnpm as the package manager ` +
+    ` for scripts to work properly.\u001b[39m\n`,
+  )
+  process.exit(1)
+}
+```
+
+第二步：
+
+在`package.json`文件的scripts配置项中添加如下代码：
+
+```
+"scripts": {
+	"preinstall": "node ./scripts/preinstall.js"
+}
+```
+
+### 五、集成element-plus
+
+参照官方文档[安装 | Element Plus (element-plus.org)](https://element-plus.org/zh-CN/guide/installation.html)
+
+第一步：
+
+下载element-plus
+
+```
+pnpm install element-plus @element-plus/icons-vue
+```
+
+第二步：
+
+按需引入element-plus相关的组件时，需要进行额外的插件
+
+```
+npm install -D unplugin-vue-components unplugin-auto-import
+```
+
+将下列代码插入到Vite的配置文件`vite.config.ts`中
+
+```
+import { defineConfig } from 'vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
+export default defineConfig({
+  // ...
+  plugins: [
+    // ...
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
+  ],
+})
+```
+
+> [!NOTE]
+>
+> 如何按需引入组件并使用呢？
+>
+> 示例：
+>
+> ![image-20240516123439346](MarkdownImgs/README/image-20240516123439346.png)
+>
+> ![image-20240516123511445](MarkdownImgs/README/image-20240516123511445.png)
+
+### 六、配置src文件夹别名
+
+第一步：
+
+将下列代码插入到Vite的配置文件`vite.config.ts`中：
+
+```
+// vite.config.ts
+import {defineConfig} from 'vite'
+import vue from '@vitejs/plugin-vue'
+import path from 'path' // 这里
+export default defineConfig({
+    plugins: [vue()],
+    // 还有这里
+    resolve: {
+        alias: {
+            "@": path.resolve("./src") // 相对路径别名配置，使用 @ 代替 src
+        }
+    }
+})
+```
+
+第二步：
+
+将下列代码插入到`tsconfig.json`文件中：
+
+```
+// tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": "./", // 解析非相对模块的基地址，默认是当前目录
+    "paths": { //路径映射，相对于baseUrl
+      "@/*": ["src/*"]
+    }
+  }
+}
+```
+
+### 七、集成sass
+
+> [!NOTE]
+>
+> 在配置styleLint时，已经安装了sass和sass-loader
+
+我们已经集成了sass，下面我们将引入一些全局样式
+
+第一步：
+
+在`src`文件夹，下面新建文件夹`styles`，新建`index.scss`、`reset.scss`和`variable.scss`文件
+
+第二步：
+
+将[scss-reset - npm (npmjs.com)](https://www.npmjs.com/package/scss-reset?activeTab=code)的文件内容引入到`reset.scss`文件里
+
+第三步：
+
+在`index.scss`文件中添加如下代码：
+
+```
+@import reset.scss
+```
+
+第四步：
+
+在`main.ts`文件中添加如下代码：
+
+```
+// 引入全局样式
+import '@/styles/index.scss'
+```
+
+> [!NOTE]
+>
+> 在index.scss文件中，还无法使用全局样式变量，我们需要进行如下步骤：
+>
+> 将下列代码插入到Vite的配置文件`vite.config.ts`中：
+>
+> ```
+> export default defineConfig({
+> 	css: {
+> 		preprocessorOptions: {
+> 			scss: {
+> 				javascriptEnabled: true,
+>             	additionalData: '@import "./src/styles/variable.scss";',
+>           	},
+>         },
+> 	},
+> })
+> ```
+
+### 八、对axios进行二次封装
+
+第一步：
+
+```
+pnpm i axios
+```
+
+第二步：
+
+在`src`文件夹下创建`utils`文件夹，再创建`request`文件，文件内容如下：
+
+```
+// 对axios进行二次封装
+
+import axios from 'axios'
+
+// 引入element-plus的组件
+import { ElMessage } from 'element-plus'
+
+const request = axios.create({
+  baseURL: '/api',
+  timeout: 5000,
+})
+
+// 请求拦截器
+request.interceptors.request.use((config) => {
+  return config
+})
+
+// 响应拦截器
+request.interceptors.response.use(
+  // 响应成功回调
+  (response) => {
+    // 用于处理（简化数据）请求返回的数据
+    return response.data
+  },
+  // 响应失败回调
+  (error) => {
+    ElMessage({
+      type: 'error',
+      message: '请求错误',
+    })
+    return Promise.reject(error)
+  },
+)
+
+export default request
+
+```
+
