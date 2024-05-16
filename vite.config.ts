@@ -25,4 +25,13 @@ export default defineConfig({
       '@': path.resolve('./src'),
     },
   },
+  // scss全局变量配置
+  css: {
+    preprocessorOptions: {
+      scss: {
+        javascriptEnabled: true,
+        additionalData: '@import "./src/styles/variable.scss";',
+      },
+    },
+  },
 })
