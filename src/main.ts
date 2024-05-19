@@ -11,4 +11,8 @@ import { ElButton } from 'element-plus'
 import 'element-plus/dist/index.css'
 app.use(ElButton)
 
+// 引入路由
+import router from './router'
+app.use(router)
+
 app.mount('#app')
