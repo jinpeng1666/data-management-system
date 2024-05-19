@@ -15,4 +15,8 @@ app.use(ElButton)
 import router from './router'
 app.use(router)
 
+// 引入仓库
+import pinia from './store'
+app.use(pinia)
+
 app.mount('#app')
