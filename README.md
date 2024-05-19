@@ -655,3 +655,272 @@ export default request
 
 ```
 
+# 5月19日
+
+### 一、配置环境变量
+
+第一步：
+
+在项目目录下，创建文件`.env.development`，文件内容如下：
+
+```
+# 变量必须以 VITE_ 为前缀才能暴露给外部读取
+NODE_ENV = 'development'
+VITE_APP_TITLE = '人力资源后台管理系统'
+VITE_APP_BASE_API = '/dev-api'
+VITE_SERVE = 'http://xxx.com'
+```
+
+第二步：
+
+在项目目录下，创建文件`.env.production`，文件内容如下：
+
+```
+NODE_ENV = 'production'
+VITE_APP_TITLE = '人力资源后台管理系统'
+VITE_APP_BASE_API = '/prod-api'
+VITE_SERVE = 'http://yyy.com'
+```
+
+第三步：
+
+在项目目录下，创建文件`.env.test`，文件内容如下：
+
+```
+NODE_ENV = 'test'
+VITE_APP_TITLE = '人力资源后台管理系统'
+VITE_APP_BASE_API = '/test-api'
+VITE_SERVE = 'http://zzz.com'
+```
+
+第四步：
+
+在`package.json`文件的scripts配置项中添加如下代码：
+
+```
+ "scripts": {
+    "build:test": "vue-tsc && vite build --mode test",
+    "build:pro": "vue-tsc && vite build --mode production",
+  },
+```
+
+完成如上配置，即可通过import.meta.env来获取环境变量
+
+### 二、配置mock
+
+参考[vite-plugin-mock/README.zh_CN.md at main · vbenjs/vite-plugin-mock (github.com)](https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md)和[vite-plugin-mock - npm (npmjs.com)](https://www.npmjs.com/package/vite-plugin-mock/v/2.9.6)
+
+第一步：
+
+```
+pnpm install -D vite-plugin-mock@2.9.6 mockjs
+```
+
+下载相关地插件
+
+第二步：
+
+将下列代码插入到Vite的配置文件`vite.config.ts`中：
+
+```
+import { viteMockServe } from 'vite-plugin-mock'
+
+export default ({ command })=> {
+  return {
+    plugins: [
+      vue(),
+      viteMockServe({
+        localEnabled: command === 'serve',
+      }),
+    ],
+  }
+}
+```
+
+第三步：
+
+在项目目录下（和src文件夹同级）创建一个mock的文件夹，创建一个user.ts的文件，文件内容如下：
+
+```
+//用户信息数据
+function createUserList() {
+    return [
+        {
+            userId: 1,
+            avatar:
+                'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+            username: 'admin',
+            password: '111111',
+            desc: '平台管理员',
+            roles: ['平台管理员'],
+            buttons: ['cuser.detail'],
+            routes: ['home'],
+            token: 'Admin Token',
+        },
+        {
+            userId: 2,
+            avatar:
+                'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+            username: 'system',
+            password: '111111',
+            desc: '系统管理员',
+            roles: ['系统管理员'],
+            buttons: ['cuser.detail', 'cuser.user'],
+            routes: ['home'],
+            token: 'System Token',
+        },
+    ]
+}
+
+export default [
+    // 用户登录接口
+    {
+        url: '/api/user/login',//请求地址
+        method: 'post',//请求方式
+        response: ({ body }) => {
+            //获取请求体携带过来的用户名与密码
+            const { username, password } = body;
+            //调用获取用户信息函数,用于判断是否有此用户
+            const checkUser = createUserList().find(
+                (item) => item.username === username && item.password === password,
+            )
+            //没有用户返回失败信息
+            if (!checkUser) {
+                return { code: 201, data: { message: '账号或者密码不正确' } }
+            }
+            //如果有返回成功信息
+            const { token } = checkUser
+            return { code: 200, data: { token } }
+        },
+    },
+    // 获取用户信息
+    {
+        url: '/api/user/info',
+        method: 'get',
+        response: (request) => {
+            //获取请求头携带token
+            const token = request.headers.token;
+            //查看用户信息是否包含有次token用户
+            const checkUser = createUserList().find((item) => item.token === token)
+            //没有返回失败的信息
+            if (!checkUser) {
+                return { code: 201, data: { message: '获取用户信息失败' } }
+            }
+            //如果有返回成功信息
+            return { code: 200, data: {checkUser} }
+        },
+    },
+]
+```
+
+### 三、api接口统一管理
+
+第一步：
+
+在`src`文件夹下创建`api`文件夹，用来统一管理项目的接口
+
+示例：
+
+![image-20240519141811060](MarkdownImgs/README/image-20240519141811060.png)
+
+以用户模块为例：
+
+![image-20240519185938517](MarkdownImgs/README/image-20240519185938517.png)
+
+### 四、配置vue-router
+
+> [!NOTE]
+>
+> 不同的权限对应着不同的路由，同时侧边栏也需根据不同的权限，异步生成
+
+参考vue-router官方网站[入门 | Vue Router (vuejs.org)](https://router.vuejs.org/zh/guide/)和[手摸手，带你用vue撸后台 系列二(登录权限篇) - 掘金 (juejin.cn)](https://juejin.cn/post/6844903478880370701)
+
+第一步：
+
+下载vue-router
+
+```
+pnpm add vue-router@4
+```
+
+第二步：
+
+在`src`文件夹下新建文件夹`router`，同时新建两个文件`index.ts`和`routes.ts`（用于存放所有权限通用路由表和动态需要根据权限加载的路由表）
+
+#### routes.ts
+
+在这个文件里面存放是的两个数组，`constantRouterMap`和`asyncRouterMap`，第一个数组存放的是所有权限通用路由表，第二个数组存放的是需要根据权限动态加载的路由表
+
+示例：
+
+```
+// 存放所有权限通用路由表
+
+export const constantRouterMap = [
+  {
+    path: '/login',
+    component: () => import('@/views/login/index.vue'), // 路由懒加载
+    name: 'login',
+  },
+  {
+    path: '/',
+    component: () => import('@/layout/index.vue'),
+    name: 'layout',
+    redirect: '/home',
+    children: [
+      {
+        path: '/home',
+        component: () => import('@/views/home/index.vue'),
+      },
+    ],
+  },
+]
+
+// 存放需要根据权限动态加载的路由表
+export const asyncRouterMap = []
+
+```
+
+![image-20240519194221789](MarkdownImgs/README/image-20240519194221789.png)
+
+#### 全局前置路由守卫
+
+![image-20240519200051652](MarkdownImgs/README/image-20240519200051652.png)
+
+### 五、配置pinia
+
+参考[简介 | Pinia (vuejs.org)](https://pinia.vuejs.org/zh/introduction.html)
+
+### 六、配置js-cookie
+
+第一步：
+
+下载js-cookie
+
+```
+pnpm i js-cookie
+```
+
+第二步：
+
+在utils文件夹下新建一个文件`auth.ts`，用来封装读取、修改和删除用户的token，将token存储在cookie，新建的文件内容如下：
+
+```
+import Cookies from 'js-cookie'
+
+const TokenKey = 'vue_admin_template_token'
+
+export function getToken() {
+  return Cookies.get(TokenKey)
+}
+
+export function setToken(token: any) {
+  return Cookies.set(TokenKey, token)
+}
+
+export function removeToken() {
+  return Cookies.remove(TokenKey)
+}
+
+```
+
