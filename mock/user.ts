@@ -1,29 +1,115 @@
 //用户信息数据
 function createUserList() {
   return [
+    // 总经理
     {
       userId: 1,
       avatar:
         'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-      username: 'admin',
+      username: 'Manager',
       password: '111111',
-      desc: '平台管理员',
-      roles: ['平台管理员'],
-      buttons: ['cuser.detail'],
-      routes: ['home'],
-      token: 'Admin Token',
+      desc: '总经理',
+      roles: ['Manager'],
+      token: 'GeneralManager Token',
     },
+    // 财务部部长
     {
       userId: 2,
       avatar:
         'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-      username: 'system',
-      password: '111111',
-      desc: '系统管理员',
-      roles: ['系统管理员'],
-      buttons: ['cuser.detail', 'cuser.user'],
-      routes: ['home'],
-      token: 'System Token',
+      username: 'FinanceMinister',
+      password: '222222',
+      desc: '财务部部长',
+      roles: ['Minister', 'Finance'],
+      token: 'MinisterOfFinance Token',
+    },
+    // 考勤部部长
+    {
+      userId: 3,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'AttendanceMinister',
+      password: '222222',
+      desc: '考勤部部长',
+      roles: ['Minister', 'Attendance'],
+      token: 'MinisterOfAttendance Token',
+    },
+    // 运营部部长
+    {
+      userId: 4,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'OperationMinister',
+      password: '222222',
+      desc: '财务部部长',
+      roles: ['Minister', 'Operation'],
+      token: 'MinisterOfOperation Token',
+    },
+    // 财务部员工1
+    {
+      userId: 5,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'FinanceEmployee1',
+      password: '333333',
+      desc: '财务部员工1',
+      roles: ['Employee', 'Finance'],
+      token: 'EmployeeOfFinance1 Token',
+    },
+    // 财务部员工2
+    {
+      userId: 6,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'FinanceEmployee2',
+      password: '333333',
+      desc: '财务部员工1',
+      roles: ['Employee', 'Finance'],
+      token: 'EmployeeOfFinance2 Token',
+    },
+    // 考勤部员工1
+    {
+      userId: 7,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'AttendanceEmployee1',
+      password: '333333',
+      desc: '考勤部员工1',
+      roles: ['Employee', 'Attendance'],
+      token: 'EmployeeOfAttendance1 Token',
+    },
+    // 考勤部员工2
+    {
+      userId: 8,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'AttendanceEmployee2',
+      password: '333333',
+      desc: '考勤部员工2',
+      roles: ['Employee', 'Attendance'],
+      token: 'EmployeeOfAttendance2 Token',
+    },
+    // 运营部员工1
+    {
+      userId: 9,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'OperationEmployee1',
+      password: '333333',
+      desc: '运营部员工1',
+      roles: ['Employee', 'Operation'],
+      token: 'EmployeeOfOperation1 Token',
+    },
+    // 运营部员工2
+    {
+      userId: 10,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'OperationEmployee2',
+      password: '333333',
+      desc: '运营部员工2',
+      roles: ['Employee', 'Operation'],
+      token: 'EmployeeOfOperation2 Token',
     },
   ]
 }
