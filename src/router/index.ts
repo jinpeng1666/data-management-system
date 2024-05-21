@@ -63,7 +63,7 @@ router.beforeEach(async (to, from, next) => {
         }
       } else {
         // 第三层判断：页面不需要权限
-        if (userStore.info.avatar === '' || userStore.info.userName === '') {
+        if (userStore.info.avatar !== '' && userStore.info.userName !== '') {
           // 第四层判断：用户数据已经获取
           next()
         } else {
