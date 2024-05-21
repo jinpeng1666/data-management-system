@@ -32,46 +32,27 @@ router.beforeEach(async (to, from, next) => {
   nprogress.start()
   if (userStore.token) {
     // 第一层判断：token值存在
+    if (userStore.info.avatar === '' || userStore.info.userName === '') {
+      // 第二层判断：info未获取
+      await userStore.userMessage()
+    }
     if (to.path === '/login') {
-      // 第二层判断：路由路径是登陆页面路径
+      // 第三层判断：路由路径是登陆页面路径
       next('/')
-      nprogress.done()
     } else {
-      // 第二层判断：路由路径不是登陆页面路径
+      // 第三层判断：路由路径不是登陆页面路径
       if (to.meta && to.meta.role) {
-        // 第三层判断：页面需要权限
-        if (userStore.info.avatar === '' || userStore.info.userName === '') {
-          // 第四层判断：用户数据已经获取
-          if (hasPermission(userStore.info.roles, to)) {
-            // 第五层判断：用户具有权限
-            next()
-          } else {
-            // 第五层判断：用户不具有权限
-            next('/404')
-          }
+        // 第四层判断：页面需要权限
+        if (hasPermission(userStore.info.roles, to)) {
+          // 第五层：有权限
+          next()
         } else {
-          // 第四层判断：用户数据未获取
-          // 获取用户信息，然后跳转
-          await userStore.userMessage()
-          if (hasPermission(userStore.info.roles, to)) {
-            // 第五层判断：用户具有权限
-            next()
-          } else {
-            // 第五层判断：用户不具有权限
-            next('/404')
-          }
+          // 第五层判断：无权限
+          next('/404')
         }
       } else {
         // 第三层判断：页面不需要权限
-        if (userStore.info.avatar !== '' && userStore.info.userName !== '') {
-          // 第四层判断：用户数据已经获取
-          next()
-        } else {
-          // 第四层判断：用户数据未获取
-          // 获取用户信息，然后跳转
-          await userStore.userMessage()
-          next()
-        }
+        next()
       }
     }
   } else {
@@ -82,7 +63,6 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 第二层登录：登录路径不在免登录白名单上
       next('/login')
-      nprogress.done()
     }
   }
 })
