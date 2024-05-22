@@ -12,7 +12,15 @@ import { constantRouterMap, asyncRouterMap } from '@/router/routes'
 // 引入permission方法
 import { hasPermission } from '@/utils/permission.ts'
 
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
+
+interface Route {
+  path: string
+  component: () => Promise<typeof import('@/layout/index.vue')>
+  name?: string
+  redirect?: string
+  children?: Route[]
+}
 
 const useUserStore = defineStore('User', {
   state: () => {
@@ -21,9 +29,10 @@ const useUserStore = defineStore('User', {
       info: {
         userName: '',
         avatar: '',
-        roles: [],
+        roles: constantRouterMap,
       },
       routes: [],
+      filterAsyncRouterMap: [] as Route[],
     }
   },
   actions: {
@@ -48,7 +57,8 @@ const useUserStore = defineStore('User', {
       this.info.avatar = result.data.checkUser.avatar
       this.info.userName = result.data.checkUser.username
       this.info.roles = result.data.checkUser.roles
-      // 过滤动态路由表，路由是二级路由，还需和一级路由合并
+
+      // 过滤动态路由表
       const filterAsyncRouterMap = asyncRouterMap[0].children.filter(
         (route) => {
           if (hasPermission(this.info.roles, route)) {
@@ -57,20 +67,7 @@ const useUserStore = defineStore('User', {
           return false
         },
       )
-      const addAsyncRouterMap = [
-        {
-          path: '/',
-          component: () => import('@/layout/index.vue'),
-          name: 'layout',
-          redirect: '/home',
-          children: filterAsyncRouterMap,
-        },
-      ]
-
-      console.log(addAsyncRouterMap)
-      // 获取路由器
-      // const $router = useRouter()
-      // $router.addRoute(addAsyncRouterMap)
+      this.filterAsyncRouterMap = filterAsyncRouterMap
     },
   },
   getters: {},
