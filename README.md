@@ -821,10 +821,6 @@ export default [
 
 ![image-20240519141811060](MarkdownImgs/README/image-20240519141811060.png)
 
-以用户模块为例：
-
-![image-20240519185938517](MarkdownImgs/README/image-20240519185938517.png)
-
 ### 十五、配置vue-router
 
 参考：[入门 | Vue Router (vuejs.org)](https://router.vuejs.org/zh/guide/)和[手摸手，带你用vue撸后台 系列二(登录权限篇) - 掘金 (juejin.cn)](https://juejin.cn/post/6844903478880370701)
@@ -913,11 +909,11 @@ export const asyncRouterMap = [
 
 ```
 
-![image-20240519194221789](MarkdownImgs/README/image-20240519194221789.png)
+**程序流程图**
 
-#### 全局前置路由守卫
+具体的内容留到权限控制相关的模块讲述
 
-![image-20240519200051652](MarkdownImgs/README/image-20240519200051652.png)
+![image-20240523212737619](MarkdownImgs/README/image-20240523212737619.png)
 
 ### 十六、配置pinia
 
@@ -979,9 +975,9 @@ export function removeToken() {
 
 ```
 
-# 权限
+# 权限控制
 
-### 一、权限管理
+### 权限管理
 
 #### 配置全局前置路由守卫
 
