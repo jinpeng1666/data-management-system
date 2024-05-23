@@ -1,8 +1,8 @@
-# 5月15日
+# 项目开始前的一些配置
 
-### 一、chore: 搭建项目
+### 一、搭建Vite项目
 
-查看vite官方文档[开始 | Vite 官方中文文档 (vitejs.cn)](https://vitejs.cn/vite3-cn/guide/#scaffolding-your-first-vite-project)，根据官方给出的步骤来搭建项目
+参考：[开始 | Vite 官方中文文档 (vitejs.cn)](https://vitejs.cn/vite3-cn/guide/#scaffolding-your-first-vite-project)
 
 第一步：
 
@@ -12,21 +12,21 @@ pnpm create vite // 在终端中输入这段代码
 
 第二步：
 
-根据命令提示符，选择所需要的配置
+根据提示，选择配置，示例如下：
 
 ![image-20240515204801737](MarkdownImgs/README/image-20240515204801737.png)
 
-> [!IMPORTANT]
+>   [!NOTE]
 >
-> 项目搭建完成，还需要使用`pnpm i`指令下载node_modules文件夹才能运行
+>   在终端运行`pnpm i`下载项目依赖的`node_modules`文件夹
 
 ### 二、配置eslint
 
-查看eslint中文文档[ESLint 入门 - ESLint - 插件化的 JavaScript 代码检查工具](https://zh-hans.eslint.org/docs/latest/use/getting-started)，根据官方给出的步骤来配置eslint
+参考：[ESLint 入门 - ESLint - 插件化的 JavaScript 代码检查工具](https://zh-hans.eslint.org/docs/latest/use/getting-started)
 
 > [!NOTE]
 >
-> 使用eslint的目的是在于根据项目需求进行配置，帮助团队维持一致的代码风格，并且可以在代码编写过程中提供实时反馈
+> 使用eslint的目的是在于，根据开发需求进行规范配置，帮助团队维持一致的代码风格，并且可以在代码编写过程中提供实时反馈
 
 第一步：
 
@@ -40,7 +40,7 @@ pnpm i eslint -D // 在终端中输入这段代码，先别着急，这段代码
 npm init @eslint/config // 在终端中输入这段代码
 ```
 
-在运行 `npm init @eslint/config` 后，你的目录下会有 `.eslintrc.{js,yml,json}` 文件
+运行完这段，你的目录下会有 `.eslintrc.{js,yml,json}` 文件
 
 第三步：
 
@@ -52,7 +52,7 @@ pnpm install -D eslint-plugin-import eslint-plugin-vue eslint-plugin-node eslint
 
 第四步：
 
-将你的目录下会有 `.eslintrc.{js,yml,json}` 文件内容修改为如下的内容：
+将你的目录下会有 `.eslintrc.{js,yml,json}` 文件内容修改为如下的内容：（这个配置可以根据需求进行自定义）
 
 ```
 // @see https://eslint.bootcss.com/docs/rules/
@@ -116,13 +116,9 @@ module.exports = {
 
 ```
 
-> [!NOTE]
->
-> 在这个文件里面，配置的rules是一些常见的规则
-
 第五步：
 
-在项目目录下，新建`.eslintignore`文件，内容如下
+在项目目录下，新建`.eslintignore`文件，添加如下内容：
 
 ```
 dist
@@ -131,7 +127,7 @@ node_modules
 
 第六步：
 
-在`package.json`文件的scripts配置项中添加如下代码
+在`package.json`文件的scripts配置项中添加如下代码：
 
 ```
 "scripts": {
@@ -142,13 +138,11 @@ node_modules
 
 > [!WARNING]
 >
-> 在第一步`pnpm i eslint -D`下载的eslint版本是9.0.0，在9.0.0的版本中，按照如上的步骤配置会报错（`pnpm run lint`不能正常运行），从 ESLint v9.0.0 开始，`.eslintrc` 配置格式已经被弃用（deprecated），取而代之的是 flat config（扁平配置）系统成为新的默认配置系统。（我太菜了，不知道他在讲什么>.<`)
+> 在第一步`pnpm i eslint -D`下载的eslint版本是9.0.0，在9.0.0的版本中，按照如上的步骤配置会报错（`pnpm run lint`不能正常运行），从 ESLint v9.0.0 开始，`.eslintrc` 配置格式已经被弃用（deprecated），取而代之的是 flat config（扁平配置）系统成为新的默认配置系统。
 >
-> 参考如下：
+> 参考：[Bug: "Error: Could not find config file." · Issue #18287 · eslint/eslint (github.com)](https://github.com/eslint/eslint/issues/18287)
 >
-> [Bug: "Error: Could not find config file." · Issue #18287 · eslint/eslint (github.com)](https://github.com/eslint/eslint/issues/18287)
->
-> 反正我只知道，9.0.0的版本就是用不了，然后我就查看了我三周前的一个练习项目的`package.json`文件，如下图所示
+> 反正，9.0.0的版本就是用不了，然后就查看了之前的一个练习项目的`package.json`文件，如下图所示
 >
 > ![image-20240515211116698](MarkdownImgs/README/image-20240515211116698.png)
 >
@@ -202,11 +196,9 @@ pnpm install -D eslint-plugin-prettier prettier eslint-config-prettier
 
 按照上述的步骤配置完成之后，进行格式化代码之后，就会按照上面添加的规则进行格式化
 
-# 5月16日
+### 四、配置styleLint
 
-### 一、配置styleLint
-
-官方文档[Home | Stylelint中文文档 | Stylelint中文网 (bootcss.com)](https://stylelint.bootcss.com/)
+参考：[Home | Stylelint中文文档 | Stylelint中文网 (bootcss.com)](https://stylelint.bootcss.com/)
 
 > [!NOTE]
 >
@@ -303,7 +295,7 @@ module.exports = {
   },
 ```
 
-### 二、配置husky
+### 五、配置husky
 
 > [!NOTE]
 >
@@ -337,9 +329,9 @@ pnpm run format
 
 ```
 
-完成如上步骤，代码在进行commit操作时，会执行`pnpm run format`对代码进行格式化，然后再提交
+完成如上步骤，在进行commit操作时，会自动执行`pnpm run format`对代码进行格式化，之后再提交
 
-### 三、配置commitLint
+### 六、配置commitLint
 
 > [!NOTE]
 >
@@ -436,7 +428,7 @@ pnpm commitlint
 'build',//编译相关的修改，例如发布版本、对项目构建或者依赖的改动
 ```
 
-### 四、配置统一包管理工具
+### 七、配置统一包管理工具
 
 第一步：
 
@@ -462,9 +454,9 @@ if (!/pnpm/.test(process.env.npm_execpath || '')) {
 }
 ```
 
-### 五、集成element-plus
+### 八、集成element-plus
 
-参照官方文档[安装 | Element Plus (element-plus.org)](https://element-plus.org/zh-CN/guide/installation.html)
+参考：[安装 | Element Plus (element-plus.org)](https://element-plus.org/zh-CN/guide/installation.html)
 
 第一步：
 
@@ -514,7 +506,7 @@ export default defineConfig({
 >
 > ![image-20240516123511445](MarkdownImgs/README/image-20240516123511445.png)
 
-### 六、配置src文件夹别名
+### 九、配置src文件夹别名
 
 第一步：
 
@@ -552,7 +544,7 @@ export default defineConfig({
 }
 ```
 
-### 七、集成sass
+### 十、集成sass
 
 > [!NOTE]
 >
@@ -604,7 +596,7 @@ import '@/styles/index.scss'
 > })
 > ```
 
-### 八、对axios进行二次封装
+### 十一、对axios进行二次封装
 
 第一步：
 
@@ -624,13 +616,21 @@ import axios from 'axios'
 // 引入element-plus的组件
 import { ElMessage } from 'element-plus'
 
+// 引入user仓库，判断是否包含token
+import useUserStore from '@/store/modules/user.ts'
+
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_APP_BASE_API,
   timeout: 5000,
 })
 
 // 请求拦截器
 request.interceptors.request.use((config) => {
+  const userStore = useUserStore()
+  // 判断仓库是否有token，有则配置每个请求带有token
+  if (userStore.token) {
+    config.headers.token = userStore.token
+  }
   return config
 })
 
@@ -655,9 +655,7 @@ export default request
 
 ```
 
-# 5月19日
-
-### 一、配置环境变量
+### 十二、配置环境变量
 
 第一步：
 
@@ -706,9 +704,9 @@ VITE_SERVE = 'http://zzz.com'
 
 完成如上配置，即可通过import.meta.env来获取环境变量
 
-### 二、配置mock
+### 十三、配置mock
 
-参考[vite-plugin-mock/README.zh_CN.md at main · vbenjs/vite-plugin-mock (github.com)](https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md)和[vite-plugin-mock - npm (npmjs.com)](https://www.npmjs.com/package/vite-plugin-mock/v/2.9.6)
+参考：[vite-plugin-mock/README.zh_CN.md at main · vbenjs/vite-plugin-mock (github.com)](https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md)和[vite-plugin-mock - npm (npmjs.com)](https://www.npmjs.com/package/vite-plugin-mock/v/2.9.6)
 
 第一步：
 
@@ -716,7 +714,7 @@ VITE_SERVE = 'http://zzz.com'
 pnpm install -D vite-plugin-mock@2.9.6 mockjs
 ```
 
-下载相关地插件
+下载相关的插件
 
 第二步：
 
@@ -813,7 +811,7 @@ export default [
 ]
 ```
 
-### 三、api接口统一管理
+### 十四、api接口统一管理
 
 第一步：
 
@@ -827,13 +825,9 @@ export default [
 
 ![image-20240519185938517](MarkdownImgs/README/image-20240519185938517.png)
 
-### 四、配置vue-router
+### 十五、配置vue-router
 
-> [!NOTE]
->
-> 不同的权限对应着不同的路由，同时侧边栏也需根据不同的权限，异步生成
-
-参考vue-router官方网站[入门 | Vue Router (vuejs.org)](https://router.vuejs.org/zh/guide/)和[手摸手，带你用vue撸后台 系列二(登录权限篇) - 掘金 (juejin.cn)](https://juejin.cn/post/6844903478880370701)
+参考：[入门 | Vue Router (vuejs.org)](https://router.vuejs.org/zh/guide/)和[手摸手，带你用vue撸后台 系列二(登录权限篇) - 掘金 (juejin.cn)](https://juejin.cn/post/6844903478880370701)
 
 第一步：
 
@@ -847,10 +841,6 @@ pnpm add vue-router@4
 
 在`src`文件夹下新建文件夹`router`，同时新建两个文件`index.ts`和`routes.ts`（用于存放所有权限通用路由表和动态需要根据权限加载的路由表）
 
-#### routes.ts
-
-在这个文件里面存放是的两个数组，`constantRouterMap`和`asyncRouterMap`，第一个数组存放的是所有权限通用路由表，第二个数组存放的是需要根据权限动态加载的路由表
-
 示例：
 
 ```
@@ -859,7 +849,7 @@ pnpm add vue-router@4
 export const constantRouterMap = [
   {
     path: '/login',
-    component: () => import('@/views/login/index.vue'), // 路由懒加载
+    component: () => import('@/views/login/index.vue'),
     name: 'login',
   },
   {
@@ -872,12 +862,54 @@ export const constantRouterMap = [
         path: '/home',
         component: () => import('@/views/home/index.vue'),
       },
+      {
+        path: '/salary',
+        component: () => import('@/views/salary/index.vue'),
+      },
+      {
+        path: '/selfAttendance',
+        component: () => import('@/views/selfAttendance/index.vue'),
+      },
     ],
   },
 ]
 
 // 存放需要根据权限动态加载的路由表
-export const asyncRouterMap = []
+export const asyncRouterMap = [
+  {
+    path: '/',
+    component: () => import('@/layout/index.vue'),
+    name: 'layout',
+    redirect: '/home',
+    children: [
+      {
+        path: '/employee',
+        component: () => import('@/views/employee/index.vue'),
+        meta: { role: ['Manager', 'Minister'] },
+      },
+      {
+        path: '/finance',
+        component: () => import('@/views/finance/index.vue'),
+        meta: { role: ['Manager', 'Finance'] },
+      },
+      {
+        path: '/attendance',
+        component: () => import('@/views/attendance/index.vue'),
+        meta: { role: ['Manager', 'Attendance'] },
+      },
+      {
+        path: '/operation',
+        component: () => import('@/views/operation/index.vue'),
+        meta: { role: ['Manager', 'Operation'] },
+      },
+      {
+        path: '/authority',
+        component: () => import('@/views/authority/index.vue'),
+        meta: { role: ['Manager'] },
+      },
+    ],
+  },
+]
 
 ```
 
@@ -887,19 +919,42 @@ export const asyncRouterMap = []
 
 ![image-20240519200051652](MarkdownImgs/README/image-20240519200051652.png)
 
-### 五、配置pinia
+### 十六、配置pinia
 
-参考[简介 | Pinia (vuejs.org)](https://pinia.vuejs.org/zh/introduction.html)
-
-### 六、配置js-cookie
+参考：[简介 | Pinia (vuejs.org)](https://pinia.vuejs.org/zh/introduction.html)
 
 第一步：
 
-下载js-cookie
+```
+pnpm i pinia
+```
+
+安装pinia
+
+第二步：
+
+在`src`文件夹下创建`store`文件夹，同时在该文件夹下创建`index.ts`文件，文件内容如下：
+
+```
+import { createPinia } from 'pinia'
+
+const pinia = createPinia()
+
+export default pinia
+
+```
+
+第三步，在`store`文件夹下创建`modules`文件夹，存放各个模块的仓库
+
+### 十七、配置js-cookie
+
+第一步：
 
 ```
 pnpm i js-cookie
 ```
+
+下载js-cookie
 
 第二步：
 
@@ -924,7 +979,7 @@ export function removeToken() {
 
 ```
 
-# 5月20日
+# 权限
 
 ### 一、权限管理
 
