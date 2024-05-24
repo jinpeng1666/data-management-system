@@ -837,7 +837,7 @@ pnpm add vue-router@4
 
 在`src`文件夹下新建文件夹`router`，同时新建两个文件`index.ts`和`routes.ts`（用于存放所有权限通用路由表和动态需要根据权限加载的路由表）
 
-示例：
+`routes.ts`文件示例：
 
 ```
 // 存放所有权限通用路由表
@@ -909,11 +909,97 @@ export const asyncRouterMap = [
 
 ```
 
-**程序流程图**
+`index.te`文件示例：
 
-具体的内容留到权限控制相关的模块讲述
+```
+import { createRouter, createWebHashHistory } from 'vue-router'
+import { constantRouterMap } from './routes'
 
-![image-20240523212737619](MarkdownImgs/README/image-20240523212737619.png)
+// 引入nprogress
+import nprogress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+// 免登录白名单
+const whiteList = ['/login', '/404']
+
+// 引入user仓库
+import useUserStore from '@/store/modules/user'
+
+// 引入permission方法
+import { hasPermission } from '@/utils/permission.ts'
+
+// 创建路由
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: constantRouterMap,
+  scrollBehavior() {
+    return {
+      left: 0,
+      top: 0,
+    }
+  },
+})
+
+// 全局前置路由
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
+  nprogress.start()
+  if (userStore.token) {
+    // 第一层判断：token值存在
+    if (userStore.info.avatar === '' || userStore.info.userName === '') {
+      // 第二层判断：info未获取
+      await userStore.userMessage()
+    }
+    if (to.path === '/login') {
+      // 第三层判断：路由路径是登陆页面路径
+      next('/')
+    } else {
+      // 第三层判断：路由路径不是登陆页面路径
+      if (to.meta && to.meta.role) {
+        // 第四层判断：页面需要权限
+        if (hasPermission(userStore.info.roles, to)) {
+          // 第五层：有权限
+          next()
+        } else {
+          // 第五层判断：无权限
+          next('/404')
+        }
+      } else {
+        // 第三层判断：页面不需要权限
+        next()
+      }
+    }
+  } else {
+    // 第一层判断：token值不存在
+    if (whiteList.includes(to.path)) {
+      // 第二层判断：路由路径在免登录白名单上
+      next()
+    } else {
+      // 第二层登录：登录路径不在免登录白名单上
+      next('/login')
+    }
+  }
+})
+
+// 全局后置路由
+router.afterEach(() => {
+  nprogress.done()
+})
+
+// 导出router
+export default router
+
+```
+
+第三步：
+
+在`main.ts`文件中，加入如下内容：
+
+```
+// 引入路由
+import router from './router'
+app.use(router)
+```
 
 ### 十六、配置pinia
 
@@ -940,7 +1026,19 @@ export default pinia
 
 ```
 
-第三步，在`store`文件夹下创建`modules`文件夹，存放各个模块的仓库
+第三步：
+
+在`store`文件夹下创建`modules`文件夹，存放各个模块的仓库
+
+第四步：
+
+在`main.ts`文件添加如下内容：
+
+```
+// 引入仓库
+import pinia from './store'
+app.use(pinia)
+```
 
 ### 十七、配置js-cookie
 
@@ -975,26 +1073,128 @@ export function removeToken() {
 
 ```
 
-# 权限控制
+# 权限验证
 
-### 权限管理
+### 前言
 
-#### 配置全局前置路由守卫
+-   后台管理系统，需要权限校验。不同的权限对应着不同的路由
+-   首页侧边栏需要根据不同的权限，异步生成
+-   登录页面：当用户输入正确的账号和密码，会向服务器发送请求（调用仓库中的对应方法），服务器返回用户对应的token，将token存储仓库和本地cookie中，在全局前置路由守卫中，通过token来获取用户的信息（包括用户名、头像、具有的权限等）
+-   首页页面：当用户输入完账号之后，页面从登录页面导航到首页页面（全局前置路由守卫已经触发，发送获取用户信息请求，获取权限等），在页面组件挂载时（onmounted），用户所具有的权限去过滤动态路由表（在仓库中已经获取过滤后的动态路由表），再通过路由的addRoute方法，动态挂载路由
 
-#### 配置请求拦截器
+### permission
 
-> [!NOTE]
->
-> 配置请求拦截器的目的是在于，在每个请求头里面塞入token，让后端对请求进行权限验证，或者后端通过token来返回对应用户相关的信息（头像、名字、权限等）
+该文件存放在`src/utils`文件夹下，文件内容如下：
 
-#### 配置pinia
+```
+// 校验用户是否具有访问这个路由的权限
+// roles：用户身份
+// routes：传入动态路由表中二级路由对象
+export function hasPermission(roles: any, routes: any) {
+  return roles.some((role: any) => {
+    return routes.meta.role.includes(role)
+  })
+}
+```
 
-- 仓库中存储着用户信息（头像、名字、具有能访问的路由）
+该方法需要传入roles和routes，roles是用户对应的权限数组，routes是一个路由对象。在路由对象中通过meta标签来标示该页面能访问的权限，如`meta: { role: ['admin','super_editor'] }`表示该页面只有admin和超级编辑才能有资格进入。
 
-- 相关的数据存储在仓库中，操作数据的方法导出给各个路由组件去使用
+### 全局前置路由守卫
 
-#### 配置路由
+**程序流程图**
 
-去`src/router/routes.ts`文件配置
+![image-20240523212737619](MarkdownImgs/README/image-20240523212737619.png)
+
+示例：
+
+```
+// 全局前置路由
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
+  nprogress.start()
+  if (userStore.token) {
+    // 第一层判断：token值存在
+    if (userStore.info.avatar === '' || userStore.info.userName === '') {
+      // 第二层判断：info未获取
+      await userStore.userMessage()
+    }
+    if (to.path === '/login') {
+      // 第三层判断：路由路径是登陆页面路径
+      next('/')
+    } else {
+      // 第三层判断：路由路径不是登陆页面路径
+      if (to.meta && to.meta.role) {
+        // 第四层判断：页面需要权限
+        if (hasPermission(userStore.info.roles, to)) {
+          // 第五层：有权限
+          next()
+        } else {
+          // 第五层判断：无权限
+          next('/404')
+        }
+      } else {
+        // 第三层判断：页面不需要权限
+        next()
+      }
+    }
+  } else {
+    // 第一层判断：token值不存在
+    if (whiteList.includes(to.path)) {
+      // 第二层判断：路由路径在免登录白名单上
+      next()
+    } else {
+      // 第二层登录：登录路径不在免登录白名单上
+      next('/login')
+    }
+  }
+})
+```
+
+### 请求拦截器
+
+配置请求拦截器的目的是在于，在每个请求头里面塞入token，让后端对请求进行权限验证，或者后端通过token来返回对应用户相关的信息（头像、名字、权限等）
+
+示例：
+
+```
+// 请求拦截器
+request.interceptors.request.use((config) => {
+  const userStore = useUserStore()
+  // 判断仓库是否有token，有则配置每个请求带有token
+  if (userStore.token) {
+    config.headers.token = userStore.token
+  }
+  return config
+})
+```
+
+### pinia
+
+在仓库中获取完用户具有的权限之后，要通过权限去过滤动态路由表
+
+```
+// 过滤动态路由表
+const filterAsyncRouterMap = asyncRouterMap[0].children.filter(
+(route) => {
+  if (hasPermission(this.info.roles, route)) {
+    return true
+  }
+  return false
+},
+)
+```
+
+### 路由
 
 通过meta标签来标示改页面能访问的权限有哪些，如`meta: { role: ['admin','super_editor'] }`表示该页面只有admin和超级编辑才能有资格进入
+
+### 首页页面
+
+当首页页面挂载完毕时，通过addRoute()方法动态添加路由
+
+```
+userStore.filterAsyncRouterMap.forEach((route: any) => {
+	$router.addRoute('layout', route)
+})
+```
+
