@@ -1,20 +1,25 @@
 <template>
-  我是登录组件
-  <el-button @click="login">登录</el-button>
+  <div class="login-container">
+    <el-row :gutter="20" style="width: 100%">
+      <el-col :xs="0" :sm="12">
+        <div class="login-back"></div>
+      </el-col>
+      <el-col :xs="24" :sm="12">456</el-col>
+    </el-row>
+  </div>
 </template>
 
-<script setup lang="ts">
-// 引入仓库
-import useUserStore from '@/store/modules/user'
-let userStore = useUserStore()
+<script setup lang="ts"></script>
 
-import { useRouter } from 'vue-router'
-// 获取路由器
-let $router = useRouter()
-const login = () => {
-  userStore.userLogin({ username: 'AttendanceMinister', password: '222222' })
-  $router.push('/')
+<style scoped lang="scss">
+.login-container {
+  display: flex;
+  align-items: stretch;
+  height: 100vh;
+  background-color: pink;
+  .login-back {
+    height: 100%;
+    background: url(@/assets/images/login-back.png) no-repeat center / cover;
+  }
 }
-</script>
-
-<style></style>
+</style>
