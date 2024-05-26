@@ -6,10 +6,8 @@ import '@/styles/index.scss'
 
 const app = createApp(App)
 
-// 按需引入element相关的组件和样式，并使用
-import { ElButton } from 'element-plus'
+// 引入element组件样式
 import 'element-plus/dist/index.css'
-app.use(ElButton)
 
 // 引入路由
 import router from './router'
