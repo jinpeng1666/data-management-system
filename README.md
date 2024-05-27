@@ -1165,6 +1165,34 @@ export function hasPermission(roles: any, routes: any) {
 示例：
 
 ```
+import { createRouter, createWebHashHistory } from 'vue-router'
+import { constantRouterMap } from './routes'
+
+// 引入nprogress
+import nprogress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+// 免登录白名单
+const whiteList = ['/login', '/404']
+
+// 引入user仓库
+import useUserStore from '@/store/modules/user'
+
+// 引入permission方法
+import { hasPermission } from '@/utils/permission.ts'
+
+// 创建路由
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: constantRouterMap,
+  scrollBehavior() {
+    return {
+      left: 0,
+      top: 0,
+    }
+  },
+})
+
 // 全局前置路由
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
@@ -1174,6 +1202,17 @@ router.beforeEach(async (to, from, next) => {
     if (userStore.info.avatar === '' || userStore.info.userName === '') {
       // 第二层判断：info未获取
       await userStore.userMessage()
+      // 动态添加路由
+      userStore.filterAsyncRouterMap.forEach((route: any) => {
+        router.addRoute('layout', route)
+      })
+      // 最后加上404路由
+      router.addRoute({
+        path: '/:pathMatch(.*)*',
+        component: () => import('@/views/404/index.vue'),
+        name: '404',
+        meta: { isHidden: true },
+      })
     }
     if (to.path === '/login') {
       // 第三层判断：路由路径是登陆页面路径
@@ -1205,7 +1244,18 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 })
+
+// 全局后置路由
+router.afterEach(() => {
+  nprogress.done()
+})
+
+// 导出router
+export default router
+
 ```
+
+在全局前置路由守卫中，发现没有获取用户的信息，则获取用户后进行动态路由添加
 
 ### 请求拦截器
 
@@ -1245,16 +1295,6 @@ const filterAsyncRouterMap = asyncRouterMap[0].children.filter(
 
 通过meta标签来标示改页面能访问的权限有哪些，如`meta: { role: ['admin','super_editor'] }`表示该页面只有admin和超级编辑才能有资格进入
 
-### 首页页面
-
-当首页页面挂载完毕时，通过addRoute()方法动态添加路由
-
-```
-userStore.filterAsyncRouterMap.forEach((route: any) => {
-	$router.addRoute('layout', route)
-})
-```
-
 # 登录页面
 
 当用户在浏览器输入地址，全局前置路由守卫开始工作，发现在cookie没有存储用户相关的token值，便将页面跳转到登录页面
@@ -1283,7 +1323,23 @@ userStore.filterAsyncRouterMap.forEach((route: any) => {
 
 参考：[Container 布局容器 | Element Plus (element-plus.org)](https://element-plus.org/zh-CN/component/container.html)
 
+![image-20240527190145623](MarkdownImgs/README/image-20240527190145623.png)
+
 ### Aside
+
+这部分又分为Logo和Menu两部分。
+
+**Logo**
+
+展示网站logo和标题
+
+**Menu**
+
+参考：[Menu 菜单 | Element Plus (element-plus.org)](https://element-plus.org/zh-CN/component/menu.html)
+
+展示垂直菜单
+
+需要将每一个菜单放到`el-scrollba`标签里面
 
 ### Header
 
