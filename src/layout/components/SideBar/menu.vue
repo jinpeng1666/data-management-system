@@ -31,7 +31,6 @@ let $router = useRouter()
 let menuList = $router.getRoutes().filter((route) => {
   return !route.meta.isHidden
 })
-console.log(menuList)
 </script>
 
 <style scoped lang="scss">
