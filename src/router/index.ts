@@ -35,6 +35,17 @@ router.beforeEach(async (to, from, next) => {
     if (userStore.info.avatar === '' || userStore.info.userName === '') {
       // 第二层判断：info未获取
       await userStore.userMessage()
+      // 动态添加路由
+      userStore.filterAsyncRouterMap.forEach((route: any) => {
+        router.addRoute('layout', route)
+      })
+      // 最后加上404路由
+      router.addRoute({
+        path: '/:pathMatch(.*)*',
+        component: () => import('@/views/404/index.vue'),
+        name: '404',
+        meta: { isHidden: true },
+      })
     }
     if (to.path === '/login') {
       // 第三层判断：路由路径是登陆页面路径
