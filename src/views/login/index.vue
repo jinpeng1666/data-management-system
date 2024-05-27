@@ -98,6 +98,13 @@ let loginRules = {
       trigger: 'blur',
     },
   ],
+  isAgree: [
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        value ? callback() : callback(new Error('您必须勾选用户协议'))
+      },
+    },
+  ],
 }
 
 // 获取表单标签
