@@ -1073,6 +1073,51 @@ export function removeToken() {
 
 ```
 
+### 十八、配置svg
+
+第一步：
+
+```
+pnpm install vite-plugin-svg-icons -D
+```
+
+安装依赖
+
+第二步：
+
+将下列代码插入到Vite的配置文件`vite.config.ts`中
+
+```
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'  // 这部分内容
+export default () => {
+  return {
+    plugins: [
+      // 这部分内容
+      createSvgIconsPlugin({
+        // Specify the icon folder to be cached
+        iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
+        // Specify symbolId format
+        symbolId: 'icon-[dir]-[name]',
+      }),
+    ],
+  }
+}
+```
+
+第三步：
+
+在`main.ts`文件中添加如下代码：
+
+```
+import 'virtual:svg-icons-register'
+```
+
+完成上述步骤，即可在组件中通过如下步骤进行调用
+
+![image-20240527112633832](MarkdownImgs/README/image-20240527112633832.png)
+
+![image-20240527112619356](MarkdownImgs/README/image-20240527112619356.png)
+
 # 权限验证
 
 ### 前言
