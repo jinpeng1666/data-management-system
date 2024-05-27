@@ -172,7 +172,7 @@ let login = () => {
     color: #606266;
   }
 
-  .el-form-item__label-wrap {
+  ::v-deep .el-form-item__label-wrap {
     align-items: center;
   }
 }
