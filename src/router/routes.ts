@@ -4,25 +4,30 @@ export const constantRouterMap = [
   {
     path: '/login',
     component: () => import('@/views/login/index.vue'),
+    meta: { isHidden: true },
     name: 'login',
   },
   {
     path: '/',
     component: () => import('@/layout/index.vue'),
+    meta: { isHidden: true },
     name: 'layout',
     redirect: '/home',
     children: [
       {
         path: '/home',
         component: () => import('@/views/home/index.vue'),
+        meta: { isHidden: false, title: '首页' },
       },
       {
         path: '/salary',
         component: () => import('@/views/salary/index.vue'),
+        meta: { isHidden: false, title: '薪资' },
       },
       {
         path: '/selfAttendance',
         component: () => import('@/views/selfAttendance/index.vue'),
+        meta: { isHidden: false, title: '出勤情况' },
       },
     ],
   },
@@ -39,27 +44,35 @@ export const asyncRouterMap = [
       {
         path: '/employee',
         component: () => import('@/views/employee/index.vue'),
-        meta: { role: ['Manager', 'Minister'] },
+        meta: { role: ['Manager', 'Minister'], isHidden: false, title: '员工' },
       },
       {
         path: '/finance',
         component: () => import('@/views/finance/index.vue'),
-        meta: { role: ['Manager', 'Finance'] },
+        meta: { role: ['Manager', 'Finance'], isHidden: false, title: '财务' },
       },
       {
         path: '/attendance',
         component: () => import('@/views/attendance/index.vue'),
-        meta: { role: ['Manager', 'Attendance'] },
+        meta: {
+          role: ['Manager', 'Attendance'],
+          isHidden: false,
+          title: '考勤',
+        },
       },
       {
         path: '/operation',
         component: () => import('@/views/operation/index.vue'),
-        meta: { role: ['Manager', 'Operation'] },
+        meta: {
+          role: ['Manager', 'Operation'],
+          isHidden: false,
+          title: '运营',
+        },
       },
       {
         path: '/authority',
         component: () => import('@/views/authority/index.vue'),
-        meta: { role: ['Manager'] },
+        meta: { role: ['Manager'], isHidden: false, title: '权限' },
       },
     ],
   },
