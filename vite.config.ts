@@ -12,6 +12,9 @@ import path from 'path'
 // 配置mock
 import { viteMockServe } from 'vite-plugin-mock'
 
+// 配置svg
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   return {
@@ -27,6 +30,12 @@ export default defineConfig(({ command }) => {
         // default
         mockPath: 'mock',
         localEnabled: command === 'serve',
+      }),
+      createSvgIconsPlugin({
+        // Specify the icon folder to be cached
+        iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
+        // Specify symbolId format
+        symbolId: 'icon-[dir]-[name]',
       }),
     ],
     resolve: {

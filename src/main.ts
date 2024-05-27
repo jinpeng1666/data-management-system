@@ -17,4 +17,7 @@ app.use(router)
 import pinia from './store'
 app.use(pinia)
 
+// svg
+import 'virtual:svg-icons-register'
+
 app.mount('#app')
