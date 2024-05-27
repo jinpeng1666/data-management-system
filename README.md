@@ -1,4 +1,4 @@
-# 项目开始前的一些配置
+# 项目配置
 
 ### 一、搭建Vite项目
 
@@ -1112,7 +1112,19 @@ export default () => {
 import 'virtual:svg-icons-register'
 ```
 
-完成上述步骤，即可在组件中通过如下步骤进行调用
+示例：
+
+第一步：
+
+在`src/assest/icons`创建`logo.svg`文件，到[iconfont-阿里巴巴矢量图标库](https://www.iconfont.cn/)复制svg的代码到这个文件里面，在需要使用的地方，编写如下的代码
+
+```
+<svg style="width: 30px; height: 30px">
+	<use xlink:href="#icon-logo"></use>
+</svg>
+```
+
+href属性值需要是`#icon-logo`，其中logo是svg文件名
 
 ![image-20240527112633832](MarkdownImgs/README/image-20240527112633832.png)
 
@@ -1266,3 +1278,15 @@ userStore.filterAsyncRouterMap.forEach((route: any) => {
 **提交**
 
 当用户点击登录按钮，发送请求，并进行路由跳转（跳转到首页）
+
+# 页面布局
+
+参考：[Container 布局容器 | Element Plus (element-plus.org)](https://element-plus.org/zh-CN/component/container.html)
+
+### Aside
+
+### Header
+
+### Main
+
+这部分主要是展示的是二级路由组件
