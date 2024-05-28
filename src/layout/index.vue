@@ -24,22 +24,6 @@
 <script setup lang="ts">
 import SideBar from './components/SideBar/index.vue'
 import HeadBar from './components/HeadBar/index.vue'
-
-// import { useRouter } from 'vue-router'
-// import useUserStore from '@/store/modules/user'
-// const userStore = useUserStore()
-
-// const $router = useRouter()
-// userStore.filterAsyncRouterMap.forEach((route: any) => {
-//   $router.addRoute('layout', route)
-// })
-// // 最后加上404路由
-// $router.addRoute({
-//   path: '/:pathMatch(.*)*',
-//   component: () => import('@/views/404/index.vue'),
-//   name: '404',
-//   meta: { isHidden: true },
-// })
 </script>
 
 <style scoped lang="scss">
@@ -47,10 +31,10 @@ import HeadBar from './components/HeadBar/index.vue'
 
 .common-layout {
   height: 100vh;
-  background-color: pink;
+  // background-color: pink;
   .aside {
     width: $el-aside-width;
-    background-color: bisque;
+    background-color: #191a21;
   }
 }
 
