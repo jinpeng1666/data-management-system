@@ -1,4 +1,31 @@
+# 前言
+
+欢迎阅读本文档！本文档旨在介绍作为初学者如何开发的人力资源后台管理系统项目，同时提供开发思路和技术实现细节。
+
+**项目概述**
+
+开发的目标是打造一款功能较为完善、易于使用的后台管理系统，以满足公司内部各部门对于管理和数据处理的基本需求。该系统允许用户通过登录不同的账号来访问，不同的账号拥有不同的身份和权限。身份权限主要包括总经理、各部门负责人以及各部门员工。总经理拥有系统内所有权限，而不同部门负责人和员工则根据其职责和需要具有相应的权限，如员工考勤、人员管理、营收统计等。
+
+**技术栈**
+
+为了实现这一目标，我们采用了一系列现代化的前端技术和工具，包括 HTML、CSS、JavaScript、Node、Axios 以及 Vue3、VueRouter4、Pinia、 Element Plus 和 git 等。这些技术的选择是基于它们在前端开发中的广泛应用、稳定性和灵活性等优势。
+
+**祝愿**
+
+在本文档中，将较为详细介绍开发流程、技术选型、系统功能实现方法以及部署和使用指南。希望通过这份文档，能够为其他开发者提供一些有价值的经验和思路，帮助他们更好地开发类似的项目。
+
+感谢您阅读本文档，希望它能够为您的开发工作提供一些帮助和启发！
+
 # 项目配置
+
+在开始项目开发之前，需要配置和准备好开发环境。本节将介绍如何设置项目所需的开发工具、依赖项和相关环境。
+
+**环境准备**
+
+首先，确保您的开发环境满足以下基本要求：
+
+-   **Node.js：** 确保您已安装 Node.js 运行时环境。您可以从 [Node.js 官方网站](https://nodejs.org/) 下载并安装适用于您操作系统的版本。
+-   **pnpm：** 项目依赖管理工具选择pnpm。请确保 Node.js 已正确安装，npm 将与 Node.js 一同安装。然后通npm来下载pnpm
 
 ### 一、搭建Vite项目
 
@@ -10,13 +37,17 @@
 pnpm create vite // 在终端中输入这段代码
 ```
 
+搭建Vite项目
+
 第二步：
 
-根据提示，选择配置，示例如下：
+按照提示操作即可，示例如下：
 
 ![image-20240515204801737](MarkdownImgs/README/image-20240515204801737.png)
 
 > [!NOTE]
+>
+> 需要安装项目的依赖项，项目才能正常运行。
 >
 > 在终端运行`pnpm i`下载项目依赖的`node_modules`文件夹
 
@@ -1134,10 +1165,70 @@ href属性值需要是`#icon-logo`，其中logo是svg文件名
 
 ### 前言
 
-- 后台管理系统，需要权限校验。不同的权限对应着不同的路由
-- 首页侧边栏需要根据不同的权限，异步生成
-- 登录页面：当用户输入正确的账号和密码，会向服务器发送请求（调用仓库中的对应方法），服务器返回用户对应的token，将token存储仓库和本地cookie中，在全局前置路由守卫中，通过token来获取用户的信息（包括用户名、头像、具有的权限等）
-- 首页页面：当用户输入完账号之后，页面从登录页面导航到首页页面（全局前置路由守卫已经触发，发送获取用户信息请求，获取权限等），在页面组件挂载时（onmounted），用户所具有的权限去过滤动态路由表（在仓库中已经获取过滤后的动态路由表），再通过路由的addRoute方法，动态挂载路由
+后台管理系统通常非常看重权限验证，因为它涉及到对系统中不同功能和数据的访问权限控制，确保只有授权用户才能进行相应的操作。
+
+**该如何实现权限校验呢，从一下方面出发**
+
+-   用户数据
+-   permission工具类
+-   全局前置路由守卫
+-   请求拦截器
+-   pinia仓库
+-   路由表
+
+**大概思路如下**
+
+1.  用户在登录页面输入账号和密码，点击登录按钮。
+2.  前端向后端发送登录请求，携带账号和密码信息。
+3.  后端接收到请求，校验账号和密码的正确性。
+4.  如果账号和密码正确，后端生成一个 token，并返回给前端。
+5.  前端收到后端返回的 token，将 token 存储在 Cookie 中，以便后续的请求中使用。
+6.  在二次封装 axios 时，请求拦截器会检查 Cookie 或者 Local Storage 中是否存在 token。
+7.  如果存在 token，则在请求头中添加 token，以确保后续的请求都携带了 token。
+8.  前端路由跳转到首页。
+9.  全局前置路由守卫开始工作，发现用户信息不存在于 Pinia 仓库中。
+10.  前端调用 Pinia 仓库中获取用户信息的方法，并传入 token。
+11.  Pinia 仓库中的方法向后端发送请求，携带 token，后端根据 token 查询用户信息，并返回给前端。
+12.  前端收到用户信息后，将用户信息存储在 Pinia 仓库中，包括头像、名字、权限等。
+13.  根据用户权限，前端过滤动态路由表，将符合用户权限的路由信息存储在 Pinia 仓库中。
+14.  全局前置路由守卫中获取到用户信息和过滤后的动态路由表，然后使用 `router.addRoute()` 方法动态添加路由。
+15.  首页页面通过路由器具有的路由，动态生成页面左侧的导航栏，只显示用户有权限访问的菜单项。
+16.  用户可以根据左侧导航栏的菜单项进行页面跳转，系统会根据用户的权限限制访问的页面。
+
+### 相关请求
+
+>   [!NOTE]
+>
+>   本项目使用Mock模拟数据，来返回前端发送的请求
+
+**登录请求**
+
+当用户在输入完账号和密码之后，后端会返回用户相关的token，返回的数据如下：
+
+```
+{
+  token: 'GeneralManager Token',
+}
+```
+
+**获取用户信息请求**
+
+当全局前置路由守卫发现在pinia仓库没有存储用户相关的信息时，会在全局前置路由守卫进行获取用户信息的请求，返回的数据如下：
+
+```
+{
+  userId: 1,
+  avatar:
+    'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+  username: 'Manager',
+  password: '111111',
+  desc: '总经理',
+  roles: ['Manager'],
+  token: 'GeneralManager Token',
+}
+```
+
+然后，在pinia仓库中存储用户相关的信息。通过后端返回的数据，可以知道用户所具有的权限`roles: ['Manager']`（用户对应的权限数组）
 
 ### permission
 
@@ -1154,7 +1245,11 @@ export function hasPermission(roles: any, routes: any) {
 }
 ```
 
-该方法需要传入roles和routes，roles是用户对应的权限数组，routes是一个路由对象。在路由对象中通过meta标签来标示该页面能访问的权限，如`meta: { role: ['admin','super_editor'] }`表示该页面只有admin和超级编辑才能有资格进入。
+该方法需要传入roles和routes这两个参数。
+
+roles是用户对应的权限数组，routes是一个路由对象。
+
+在路由对象中通过meta标签来标示该页面能访问的权限，如`meta: { role: ['Manager','Minister'] }`表示该页面只有Manager或者Minister的权限才能有资格进入。
 
 ### 全局前置路由守卫
 
@@ -1255,7 +1350,13 @@ export default router
 
 ```
 
-在全局前置路由守卫中，发现没有获取用户的信息，则获取用户后进行动态路由添加
+**说明**
+
+在守卫中，根据用户的登录状态和权限信息，动态地添加路由、重定向到登录页或者跳转到404页面，从而实现了路由导航守卫的权限验证功能
+
+**注意**
+
+404页面需要在动态添加完其他路由之后，再进行添加
 
 ### 请求拦截器
 
@@ -1293,7 +1394,92 @@ const filterAsyncRouterMap = asyncRouterMap[0].children.filter(
 
 ### 路由
 
-通过meta标签来标示改页面能访问的权限有哪些，如`meta: { role: ['admin','super_editor'] }`表示该页面只有admin和超级编辑才能有资格进入
+路由可以根据如下模版来写
+
+```
+// 存放所有权限通用路由表
+
+export const constantRouterMap = [
+  {
+    path: '/login',
+    component: () => import('@/views/login/index.vue'),
+    meta: { isHidden: true },
+    name: 'login',
+  },
+  {
+    path: '/',
+    component: () => import('@/layout/index.vue'),
+    meta: { isHidden: true },
+    name: 'layout',
+    redirect: '/home',
+    children: [
+      {
+        path: '/home',
+        component: () => import('@/views/home/index.vue'),
+        meta: { isHidden: false, title: '首页' },
+      },
+      {
+        path: '/salary',
+        component: () => import('@/views/salary/index.vue'),
+        meta: { isHidden: false, title: '薪资' },
+      },
+      {
+        path: '/selfAttendance',
+        component: () => import('@/views/selfAttendance/index.vue'),
+        meta: { isHidden: false, title: '出勤情况' },
+      },
+    ],
+  },
+]
+
+// 存放需要根据权限动态加载的路由表
+export const asyncRouterMap = [
+  {
+    path: '/',
+    component: () => import('@/layout/index.vue'),
+    name: 'layout',
+    redirect: '/home',
+    children: [
+      {
+        path: '/employee',
+        component: () => import('@/views/employee/index.vue'),
+        meta: { role: ['Manager', 'Minister'], isHidden: false, title: '员工' },
+      },
+      {
+        path: '/finance',
+        component: () => import('@/views/finance/index.vue'),
+        meta: { role: ['Manager', 'Finance'], isHidden: false, title: '财务' },
+      },
+      {
+        path: '/attendance',
+        component: () => import('@/views/attendance/index.vue'),
+        meta: {
+          role: ['Manager', 'Attendance'],
+          isHidden: false,
+          title: '考勤',
+        },
+      },
+      {
+        path: '/operation',
+        component: () => import('@/views/operation/index.vue'),
+        meta: {
+          role: ['Manager', 'Operation'],
+          isHidden: false,
+          title: '运营',
+        },
+      },
+      {
+        path: '/authority',
+        component: () => import('@/views/authority/index.vue'),
+        meta: { role: ['Manager'], isHidden: false, title: '权限' },
+      },
+    ],
+  },
+]
+
+```
+
+路由中存放着，存放所有权限通用路由表和需要根据权限动态加载的路由表。每个路由具有相对于的路由元信息，如`role: ['Manager']`，表明该路由需要Manager权限
 
 # 登录页面
 
