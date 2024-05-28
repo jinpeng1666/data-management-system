@@ -1255,7 +1255,7 @@ roles是用户对应的权限数组，routes是一个路由对象。
 
 **程序流程图**
 
-![image-20240523212737619](MarkdownImgs/README/image-20240523212737619.png)
+![image-20240528181812142](MarkdownImgs/README/image-20240528181812142.png)
 
 示例：
 
