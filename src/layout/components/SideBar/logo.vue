@@ -32,6 +32,7 @@ let pushIndex = () => {
   .logo-title {
     font-size: 20px;
     font-weight: 700;
+    color: white;
   }
 }
 </style>

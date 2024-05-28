@@ -3,7 +3,7 @@
     <!-- element菜单 -->
     <el-menu
       router
-      style="background-color: #a3b18a; width: 100%"
+      style="background-color: #191a21; width: 100%"
       :default-active="$route.path"
     >
       <template v-for="item in menuList" :key="item.path">
@@ -28,7 +28,7 @@ import { useRouter } from 'vue-router'
 let $router = useRouter()
 
 // 需要在左侧导航栏展示的路由
-let menuList = $router.getRoutes().filter((route) => {
+let menuList = $router.getRoutes().filter((route: any) => {
   return !route.meta.isHidden
 })
 </script>
@@ -37,5 +37,22 @@ let menuList = $router.getRoutes().filter((route) => {
 .menuScrollbar {
   width: 100%;
   height: calc(100vh - $logo-height);
+
+  // 消除el-menu的边框
+  .el-menu {
+    border-right: 0;
+  }
+
+  // 设置menu-item的样式
+  .el-menu-item {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+  }
+
+  // 设置menu-item选中时的样式
+  .is-active {
+    background-color: #282a36;
+  }
 }
 </style>
