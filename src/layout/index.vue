@@ -13,7 +13,7 @@
           <HeadBar></HeadBar>
         </el-header>
         <!-- 右侧主体 -->
-        <el-main>
+        <el-main style="background-color: #f5f6f8">
           <router-view></router-view>
         </el-main>
       </el-container>
