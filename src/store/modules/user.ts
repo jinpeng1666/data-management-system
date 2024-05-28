@@ -69,6 +69,14 @@ const useUserStore = defineStore('User', {
       )
       this.filterAsyncRouterMap = filterAsyncRouterMap
     },
+    // 退出登录，删除信息
+    logout() {
+      this.token = ''
+      this.info.userName = ''
+      this.info.avatar = ''
+      this.filterAsyncRouterMap = []
+      removeToken()
+    },
   },
   getters: {},
 })
